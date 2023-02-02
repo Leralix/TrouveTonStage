@@ -68,9 +68,12 @@ def scrap_page(content):
 
     # Remove from the job types a recurrent one, which is not important.
     try:
-        type_contrat.remove('Temps plein')
+        type_contrat.remove('temps plein')
+        type_contrat.remove('télétravail')
     except:
         pass
+
+    type_contrat_string = ','.join(type_contrat)
 
     # To retrieve all the other informations, will have to use the job description
     description = soup.find("div", {"id": "jobDescriptionText"})
@@ -94,6 +97,9 @@ def scrap_page(content):
     except:
         pass
 
+    bac_set = set(bac)
+    bac_string = ','.join(bac_set)
+
     # Retrieve the duration information
     # Because an offer just have a unique duration, the information is stored in a string.
     duree = ""
@@ -104,6 +110,7 @@ def scrap_page(content):
         result = re.findall(regex, description_text)
         # If not empty add those to the list
         if result:
+            print(result)
             duree = result[0][0]
             break
 
@@ -158,8 +165,8 @@ def scrap_page(content):
     # The keys will be the column names of the future dataset.
     return {
         "Titre": [titre],
-        "Type de contrat": [type_contrat],
-        "Bac": [bac],
+        "Type de contrat": [type_contrat_string],
+        "Bac": [bac_string],
         "Durée": [duree],
         "Début": [debut],
         "Nom entreprise": [nom_company],

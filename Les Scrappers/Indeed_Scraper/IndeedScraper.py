@@ -11,7 +11,7 @@ from bs4 import BeautifulSoup
 import requests
 
 
-from Indeed_Offer_new_regex import scrap_page
+from Indeed_Offer_Scraper import scrap_page
 
 import time
 import random
@@ -85,18 +85,18 @@ df=pd.DataFrame()
 
 # Because the first contains start=0 in its url, and the second one contains start=10 on its url.
 # There is a 10 incrementation change on each url for the start field.
-for i in range(0,40,10):
+for i in range(0,20,10):
     # get the url correspondign to the page
     url = "https://fr.indeed.com/jobs?q=stage&start="+str(i)
 
     # Scrap this page
-    # get all job offers contained, and get info from theses job offers.
+    # get all job offers contained, and get info from these job offers.
     df = ScrapOnePage(chrome, url,df)
 
 
 # Export the dataframe into a csv.
 df_finale = df
-df_finale.to_csv("testNEW3.csv",index=False)
+df_finale.to_csv("./data/Indeed.csv",index=False)
 
 
 
