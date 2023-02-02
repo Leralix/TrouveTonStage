@@ -10,6 +10,10 @@ es_client = Elasticsearch(hosts=["http://localhost:9200"])
 def home():
     return render_template('index.html')
 
+@app.route('/search_results')
+def search_request():
+    return render_template('search.html')
+
 
 
 if __name__ == '__main__':
