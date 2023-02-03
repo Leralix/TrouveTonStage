@@ -9,10 +9,10 @@ es_client = Elasticsearch(hosts=["http://localhost:9200"])
 def home():
     return render_template('main.html')
 
-<<<<<<< Updated upstream
-=======
-@app.route('/search_results', methods=['GET', 'POST'])
+
+@app.route('/search_results', methods=['GET','POST'])
 def search_request():
+    print(request.method)
     print("test")
     search_term = request.form["NameInput"]
     print(search_term)
@@ -36,9 +36,6 @@ def search_request():
         body=body)
 
     return render_template('search_results.html', res=res)
-
->>>>>>> Stashed changes
-
 
 if __name__ == '__main__':
     app.secret_key = 'mysecret'
