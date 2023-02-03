@@ -9,15 +9,11 @@ es_client = Elasticsearch(hosts=["http://localhost:9200"])
 def home():
     return render_template('main.html')
 
-@app.route('/search_results')
-def search_request():
-    return render_template('search.html')
 
 
 @app.route('/search_results', methods=['GET','POST'])
 def search_request():
     print(request.method)
-    print("test")
     search_term = request.form["NameInput"]
     print(search_term)
 

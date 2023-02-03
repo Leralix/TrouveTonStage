@@ -66,8 +66,10 @@
             <thead>
               <tr>
                 <th>Titre</th>
+                <th>Entreprise</th>
                 <th>Bac</th>
                 <th>Durée</th>
+                <th>Lien</th>
               </tr>
             </thead>
 
@@ -75,8 +77,14 @@
             <tbody>
               <tr>
                 <th scope="row">{{ hit['_source']['Titre'] }}</th>
-                  <td>{{ hit['_source']['BacFormat'] }}</td>
-                  <td>{{ hit['_source']['ContratFormat'] }}</td>
+                  <td>{{ hit['_source']['Nom entreprise'] }}</td>
+                  <td>{{ hit['_source']['Bac'] }}</td>
+                  <td>{{ hit['_source']['Durée'] }}</td>
+                  <td><a style=hit['_source']['url'] href="http://example.com">
+                    <div>
+                      Site de l'annonce
+                    </div>
+                  </a></td>
               </tr>
             </tbody>
         {% endfor %}

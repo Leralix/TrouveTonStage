@@ -12,7 +12,7 @@ es_client.ping()
 df = pd.read_csv("DatabaseFInaleWTTJ.csv")
 df = df.fillna('')
 
-use_these_keys = ['Titre', 'Durée', 'Nom entreprise', 'Bac']
+use_these_keys = ['Titre', 'Durée', 'Nom entreprise', 'Bac','url']
 
 
 def filterKeys(document):
