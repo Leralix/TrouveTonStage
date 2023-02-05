@@ -120,7 +120,7 @@ class DataCleaner:
 
         self.df['BacFormat'] = self.df["Bac"].fillna('').apply(lambda x: self.clean_bac_(x))
         self.df['Deb_format'] = self.df["Début"].fillna('').apply(lambda x: self.clean_debut_(x))
-        self.df['ContratFormat'] = self.df['Type de contrat'].apply(lambda x: x.lower())
+        self.df['ContratFormat'] = self.df['Type de contrat'].fillna('').apply(lambda x: x.lower())
 
     def to_csv(self,filename:str):
         return self.df.to_csv(filename)
