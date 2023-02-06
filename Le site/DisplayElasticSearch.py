@@ -13,9 +13,7 @@ def home():
 
 @app.route('/search_results', methods=['GET','POST'])
 def search_request():
-    print(request.method)
     search_term = request.form["NameInput"]
-    print(search_term)
 
     body = {
         "query": {
