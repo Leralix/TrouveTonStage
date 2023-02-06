@@ -44,7 +44,6 @@ def search_request():
         temp.append(hit['_source'])
     # Create a dataframe.
     data = pd.DataFrame(temp)
-    resultList = temp
     #print(data)
     #data.to_csv("fichierCsvAthibaud")
     #print(result[8]['_source']['Titre'])
