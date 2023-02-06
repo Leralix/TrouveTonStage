@@ -1,5 +1,7 @@
+from elasticsearch.helpers import scan
 from flask import Flask, render_template,request
 from elasticsearch import Elasticsearch
+import pandas as pd
 
 app = Flask(__name__)
 
@@ -12,12 +14,9 @@ def home():
 
 @app.route('/search_results', methods=['GET','POST'])
 def search_request():
-    print(request.method)
-    print("test")
     search_term = request.form["NameInput"]
-    print(search_term)
 
-    body = {
+    query = {
         "query": {
             "bool": {
                 "must": [
@@ -30,12 +29,26 @@ def search_request():
             }
         }
     }
-    res = es_client.search(
-        index="job_offer",
-        size=20,
-        body=body)
+    rel = scan(client=es_client,
+               query=query,
+               scroll='1m',
+               index='job_offer',
+               raise_on_error=True,
+               preserve_order=False,
+               clear_scroll=True
+               )
+    result = list(rel)
+    temp = []
 
-    return render_template('search_results.html', res=res)
+    for hit in result:
+        temp.append(hit['_source'])
+    # Create a dataframe.
+    data = pd.DataFrame(temp)
+    resultList = temp
+    #print(data)
+    #data.to_csv("fichierCsvAthibaud")
+    #print(result[8]['_source']['Titre'])
+    return render_template('search_results.html', res=result)
 
 if __name__ == '__main__':
     app.secret_key = 'mysecret'
