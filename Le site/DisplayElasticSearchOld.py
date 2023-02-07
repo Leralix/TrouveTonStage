@@ -55,7 +55,7 @@ def search_request():
                           }
           }
         },
-{
+        {
           "match": {
             "Titre": search_term
           }

@@ -16,6 +16,10 @@ def home():
 @app.route('/search_results', methods=['GET','POST'])
 def search_request():
     search_term = request.form["NameInput"]
+    bac_query = request.form["BacInput"]
+    duree_query = request.form["DureeInput"]
+    print(bac_query)
+    print(duree_query)
 
     query = {
         "query": {
@@ -25,7 +29,13 @@ def search_request():
                         "match": {
                             "Titre": search_term
                         }
+                    },
+                    {
+                        "match": {
+                            "Bac": bac_query
+                        }
                     }
+                    
                 ]
             }
         }
