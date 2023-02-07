@@ -22,11 +22,12 @@ def filterKeys(document):
 def doc_generator(df):
     df_iter = df.iterrows()
     for index, document in df_iter:
+        doc = filterKeys(document)
         yield {
             "_index": 'job_offer',
             "_type": "offer",
-            "_id": None,
-            "_source": filterKeys(document),
+            "_id": doc['url'],
+            "_source": doc,
         }
 
 
