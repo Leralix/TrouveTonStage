@@ -1,31 +1,23 @@
 # This Python file uses the following encoding: utf-8
+import random
+import time
 import pandas as pd
 from selenium import webdriver
-from selenium.webdriver.chrome.service import Service
-from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.by import By
-
-from selenium.webdriver.support import expected_conditions as EC
-from bs4 import BeautifulSoup
-import requests
-
-from IndeedOfferScraper import IndeedOfferScraper
-
-import time
-import random
-
-from webdriver_manager.chrome import ChromeDriverManager
+from selenium.webdriver.support import expected_conditions as ec
+from selenium.webdriver.support.ui import WebDriverWait
+from .IndeedOfferScraper import IndeedOfferScraper
 
 
 class IndeedScraper:
 
     def __init__(self, webdriver_path: str, nb_pages: int, output_name: str = None, min_delai: int = 6,
                  max_delai: int = 14, update_every: int = 0):
+        self.chrome = None
         self.indeed_df = pd.DataFrame()
 
         self.webdriver_path = webdriver_path
-        self.nb_pages =nb_pages
+        self.nb_pages = nb_pages
         self.update_every = update_every
         self.counter = 0
         self.output_name = output_name
@@ -33,12 +25,8 @@ class IndeedScraper:
         self.min_delai = min_delai
         self.max_delai = max_delai
 
-
-
     # This is the main function
     # Its role is to get a link on every job offer on a given page, then call the scraping function on each one.
-
-
 
     def launch_scraping(self):
 
@@ -50,7 +38,6 @@ class IndeedScraper:
                 self.to_csv(self.output_name)
         except:
             raise 'No Webdriver found'
-
 
     @staticmethod
     def initialisation_(webdriver_path):
@@ -67,7 +54,7 @@ class IndeedScraper:
         # Accept the cookies after arriving on the page
         # Wait until the button 'accept' is clickable.
         wait = WebDriverWait(self.chrome, 15)
-        wait.until(EC.element_to_be_clickable((By.XPATH, '//*[@id="onetrust-accept-btn-handler"]')))
+        wait.until(ec.element_to_be_clickable((By.XPATH, '//*[@id="onetrust-accept-btn-handler"]')))
         self.chrome.find_element('xpath', '//*[@id="onetrust-accept-btn-handler"]').click()
 
     # Function to scrap one job offer page (page containing multiple job offer) Parameters chrome (Webdriver used to
@@ -93,7 +80,7 @@ class IndeedScraper:
         # For each link found on the page
         # Get all the information from each links.
 
-        for elem in url_list[:2]:
+        for elem in url_list:
 
             # Get the webdrive on the page of the offers
             self.chrome.get(elem)
@@ -105,11 +92,11 @@ class IndeedScraper:
             list_content['url'] = elem
 
             # Concatenate the dictionnary to the dataframe given in parameters
-            df = pd.concat([df, pd.DataFrame(list_content)],ignore_index=True)
+            df = pd.concat([df, pd.DataFrame(list_content)], ignore_index=True)
 
             self.counter += 1
             if (self.update_every != 0) and (self.counter % self.update_every == 0):
-                df.to_csv("temp_indeed_offer.csv", index=False)
+                df.to_csv("./data/temp/temp_indeed_offer.csv", index=False)
 
             # Do a random pause to not flood the website and be spotted or banned.
             time.sleep(random.randint(self.min_delai, self.max_delai))

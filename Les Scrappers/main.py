@@ -1,26 +1,25 @@
 import pandas as pd
 import time
-from IndeedScraper import IndeedScraper
-from WTTJScraper import WTTJScraper
+from indeed import IndeedScraper
+from wttj.WTTJScraper import WTTJScraper
 from threading import Thread
 
 from Data_Cleaner import DataCleaner
 
 ISc = IndeedScraper(
-    webdriver_path='./chromedriver.exe',
-    nb_pages=1,
-    output_name="INDEED.csv",
+    webdriver_path='./webdriver/chromedriver.exe',
+    nb_pages=5,
+    output_name="./data/INDEED.csv",
     min_delai=3,
     update_every=0
 )
 
 wts = WTTJScraper(
-    webdriver_path='./chromedriver.exe',
-    nb_pages=1,
-    output_name="WTTJ.csv",
+    webdriver_path='./webdriver/chromedriver.exe',
+    nb_pages=5,
+    output_name="./data/WTTJ.csv",
     update_every=0,
 )
-
 
 thread_list = []
 thrd1 = Thread(target=ISc.launch_scraping)
@@ -36,15 +35,15 @@ for t in thread_list:
 for t in thread_list:
     t.join()
 
-
 # Délai pour attendre la création des csv.
 time.sleep(3)
 
 # Lecture et cleaning du fichier joignant les 2 csv.
-df1 = pd.read_csv("INDEED.csv")
-df2 = pd.read_csv("WTTJ.csv")
-df3 = pd.concat([df1,df2],axis=0,ignore_index=True)
-df3.to_csv('finale.csv',index=False)
+df1 = pd.read_csv("./data/INDEED.csv")
+df2 = pd.read_csv("./data/WTTJ.csv")
+df3 = pd.concat([df1, df2], axis=0, ignore_index=True)
+df3.to_csv('./data/Ind_Wttj.csv', index=False)
 
-DataCleaner('finale.csv','cleaned_data.csv')
-
+# Clean csv and export the result
+dc = DataCleaner('./data/Ind_Wttj.csv')
+dc.clean('./clean_data/clean_data.csv')

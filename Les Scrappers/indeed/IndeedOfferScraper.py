@@ -11,11 +11,11 @@ regex_BAC_3 = re.compile(
     re.I | re.UNICODE)
 regex_BAC_1 = re.compile(r"(?:préparez.+?|De\s*)(bac.{1,5}(à|\/)\s*bac.+?(\d|pro))", re.I | re.UNICODE)
 regex_BAC_2 = re.compile(
-    r"(?:Formation|profil|prérequis|requis|études|titulaire)(?:[\s\S]{1,70})(Bac(pro|\s*[+\s*]\s*.{0,5}\d))",
+    r"(?:Formation|profil|prérequis|requis|études|titulaire|prépa)(?:[\s\S]{1,150})(Bac(\s*|pro|\s*[+\s*]\s*.{0,5}\d))",
     re.I | re.UNICODE)
 regex_BAC = [regex_BAC_1, regex_BAC_2, regex_BAC_3]
 
-regex_duree2 = re.compile(r"(?:Durée|durée|stage|Stage|période)(?:.{1,60})(\d{1}(\s*)mois)", re.I | re.UNICODE)
+regex_duree2 = re.compile(r"(?:Durée|durée|stage|Stage|période)(?:.{1,60})(\s\d+(\s*)mois)", re.I | re.UNICODE)
 regex_duree1 = re.compile(r"(?:Durée|durée|stage|Stage|période)(?:.{1,60})(\d{1}\s(mois|)\s*à\s\d{1}\smois)",
                           re.I | re.UNICODE)
 regex_duree_list = [regex_duree1, regex_duree2]
@@ -98,11 +98,14 @@ class IndeedOfferScraper:
     def job_type_(soup, titre):
         # Get the job type indicated on the page
         type_contrat = set()
-        for section in soup.find_all('div', {"class": "css-1hplm3f eu4oa1w0"}):
-            if section.find('div').text == "Type de contrat":
-                for element in section.find_all('div')[1:]:
-                    type_contrat.add(element.text.lower())
-
+        for section in soup.find_all('div', {"class": re.compile('.*css-.*')}):
+            # for section in soup.find_all('div', {"class": "css-1hplm3f eu4oa1w0"}):
+            try:
+                if section.find('div').text == "Type de contrat":
+                    for element in section.find_all('div')[1:]:
+                        type_contrat.add(element.text.lower())
+            except:
+                continue
         type_contrat_base = ['alternance', 'cdd', 'cdi', 'stage']
         for mot in titre.split(' '):
             if mot.lower() in type_contrat_base:
@@ -112,9 +115,9 @@ class IndeedOfferScraper:
         try:
             type_contrat.remove('temps plein')
             type_contrat.remove('télétravail')
-        except Exception as e:
+        except Exception:
             pass
-            #raise 'Cannot remove statement from job types'
+            # raise 'Cannot remove statement from job types'
 
         type_contrat_string = ','.join(type_contrat)
 
@@ -157,7 +160,7 @@ class IndeedOfferScraper:
             result = re.findall(regex, description_text)
             # If not empty add those to the list
             if result:
-                duree = result[0][0]
+                duree = result[0][0].strip()
                 break
 
         return duree
