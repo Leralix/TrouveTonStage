@@ -6,10 +6,10 @@ import pandas as pd
 LOCAL = False
 
 
-es_client = Elasticsearch(hosts=["http://elasticsearch:9200"])
+es_client = Elasticsearch(hosts=["http://localhost:9200"])
 es_client.ping()
 
-df = pd.read_csv("./data/DatabaseFInaleWTTJ.csv")
+df = pd.read_csv("data/DatabaseFInaleWTTJ.csv")
 df = df.fillna('')
 
 use_these_keys = ['Titre', 'Durée', 'Nom entreprise', 'Bac','url']
