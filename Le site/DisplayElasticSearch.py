@@ -1,20 +1,66 @@
-from flask import Flask, render_template
+from elasticsearch.helpers import scan
+from flask import Flask, render_template,request
 from elasticsearch import Elasticsearch
+import pandas as pd
 
 app = Flask(__name__)
-
 
 es_client = Elasticsearch(hosts=["http://localhost:9200"])
 
 @app.route('/')
 def home():
-    return render_template('index.html')
+    return render_template('main.html')
 
-@app.route('/search_results')
+
+
+@app.route('/search_results', methods=['GET','POST'])
 def search_request():
-    return render_template('search.html')
+    search_term = request.form["NameInput"]
+    bac_query = request.form["BacInput"]
+    duree_query = request.form["DureeInput"]
+    print(bac_query)
+    print(duree_query)
 
+    query = {
+        "query": {
+            "bool": {
+                "must": [
+                    {
+                        "match": {
+                            "Bac": {
+                                "query": bac_query,
+                                "operator": "and"
+                            }
+                        }
+                    },
+                    {
+                        "match": {
+                            "Titre": search_term
+                        }
+                    }
+                ]
+            }
+        }
+    }
+    rel = scan(client=es_client,
+               query=query,
+               scroll='1m',
+               index='job_offer',
+               raise_on_error=True,
+               preserve_order=False,
+               clear_scroll=True
+               )
+    result = list(rel)
+    temp = []
 
+    for hit in result:
+        temp.append(hit['_source'])
+    # Create a dataframe.
+    data = pd.DataFrame(temp)
+    #print(data)
+    #data.to_csv("fichierCsvAthibaud")
+    #print(result[8]['_source']['Titre'])
+    return render_template('search_results.html', res=result)
 
 if __name__ == '__main__':
     app.secret_key = 'mysecret'

@@ -12,7 +12,7 @@ es_client.ping()
 df = pd.read_csv("DatabaseFInaleWTTJ.csv")
 df = df.fillna('')
 
-use_these_keys = ['Titre', 'Durée', 'Nom entreprise', 'Bac']
+use_these_keys = ['Titre', 'Durée', 'Nom entreprise', 'Bac','url']
 
 
 def filterKeys(document):
@@ -22,11 +22,12 @@ def filterKeys(document):
 def doc_generator(df):
     df_iter = df.iterrows()
     for index, document in df_iter:
+        doc = filterKeys(document)
         yield {
             "_index": 'job_offer',
             "_type": "offer",
-            "_id": None,
-            "_source": filterKeys(document),
+            "_id": doc['url'],
+            "_source": doc,
         }
 
 
