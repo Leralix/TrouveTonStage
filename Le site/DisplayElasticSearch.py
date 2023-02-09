@@ -27,15 +27,17 @@ def search_request():
                 "must": [
                     {
                         "match": {
-                            "Titre": search_term
+                            "Bac": {
+                                "query": bac_query,
+                                "operator": "and"
+                            }
                         }
                     },
                     {
                         "match": {
-                            "Bac": bac_query
+                            "Titre": search_term
                         }
                     }
-                    
                 ]
             }
         }
