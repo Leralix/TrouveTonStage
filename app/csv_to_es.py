@@ -2,14 +2,19 @@ from elasticsearch import Elasticsearch
 from elasticsearch import helpers
 
 import pandas as pd
+import time
 
 LOCAL = False
 
 
 #es_client = Elasticsearch(hosts=["http://localhost:9200"])
+print("Connection a l'host")
 es_client = Elasticsearch(hosts=["http://elasticsearch:9200"])
-
+time.sleep(0.1)
+print("début du ping")
+time.sleep(0.2)
 es_client.ping()
+print("fin du ping")
 
 df = pd.read_csv("data/DatabaseFInaleWTTJ.csv")
 df = df.fillna('')
