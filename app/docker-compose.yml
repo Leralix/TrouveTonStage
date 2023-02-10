@@ -2,7 +2,7 @@ version: '3'
 
 services:
   web:
-    container_name: app
+    container_name: TMS_app
     build: .
     ports:
       - "5000:5000"
