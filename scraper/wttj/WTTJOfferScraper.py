@@ -40,6 +40,8 @@ class WTTJOfferScraper:
         try:
             if 'mois' in type_emploi_et_duree[1].text:
                 duree_emploi = type_emploi_et_duree[1].text
+            else:
+                duree_emploi = np.nan
         except NoSuchElementException:
             duree_emploi = np.nan
 
@@ -65,7 +67,10 @@ class WTTJOfferScraper:
 
         # Nettoyer certaines variables:
 
-        duree_emploi = duree_emploi.replace('(', '').replace(')', '')
+        try:
+            duree_emploi = duree_emploi.replace('(', '').replace(')', '')
+        except:
+            pass
         # NiveauEtude = NiveauEtude.replace('(', '').replace(')', '')
 
         # Ajouts des infos au tableau existant

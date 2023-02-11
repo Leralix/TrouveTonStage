@@ -36,9 +36,13 @@ class WTTJScraper:
             if self.url_csv is not None:
                 url_list1 = pd.read_csv(self.url_csv)['url']
                 self.scrap_(url_list1)
+                print("FIN")
             else:
+                print("url_list")
                 url_list = self.offers_links_(self.nb_pages)
+                print(len(url_list))
                 self.scrap_(url_list)
+                print("FIN")
 
             self.df.to_csv(self.output_name, index=False)
 
@@ -56,6 +60,7 @@ class WTTJScraper:
         url_list = []
 
         self.chrome.get(mainUrl)
+        print("get_page")
         df_url = pd.DataFrame(columns=['url'])
 
         for i in range(1, nb_pages + 1):
@@ -70,14 +75,16 @@ class WTTJScraper:
                 dicti = {
                     "url": url.get_attribute("href")
                 }
-                df_url = pd.concat([df_url, pd.DataFrame(dicti.values(), columns=['url'])], ignore_index=True)
 
+                df_url = pd.concat([df_url, pd.DataFrame(dicti.values(), columns=['url'])], ignore_index=True)
+                print("df_url")
             # Changement de pages
             try:
                 changer_page_supp = self.chrome.find_element("xpath",
-                                                             "//ul/li[contains(@class,'ais-Pagination-item "
-                                                             "ais-Pagination-item--nextPage')]")
+                                                             "//ul/li/a[contains(@id,'-8')]")
+
             except NoSuchElementException:
+                print("marche pas")
                 break
             df_url.to_csv('./data/temp/temp_wttj_links.csv')
             changer_page_supp.click()
@@ -86,13 +93,16 @@ class WTTJScraper:
 
     def scrap_(self, links):
         count = 0
+        print(len(links))
         for url in links:
+
             ws = WTTJOfferScraper(self.chrome, url)
             df_offer = ws.scrap_page()
 
             self.df = pd.concat([self.df, df_offer], ignore_index=True)
 
             count += 1
+            print(count)
             if (self.update_every != 0) and (count % self.update_every == 0):
                 self.df.to_csv('./data/temp/temp_wttj_offer.csv', index=False)
 
