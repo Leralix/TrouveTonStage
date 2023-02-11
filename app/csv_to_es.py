@@ -9,17 +9,18 @@ LOCAL = False
 
 #es_client = Elasticsearch(hosts=["http://localhost:9200"])
 print("Connection a l'host")
-es_client = Elasticsearch(hosts=["http://elasticsearch:9200"])
+#es_client = Elasticsearch(hosts=["http://elasticsearch:9200"])
+es_client = Elasticsearch(hosts=["http://localhost:9200"])
 time.sleep(0.1)
 print("début du ping")
 time.sleep(0.2)
 es_client.ping()
 print("fin du ping")
 
-df = pd.read_csv("data/DatabaseFInaleWTTJ.csv")
+df = pd.read_csv("data/clean_data.csv")
 df = df.fillna('')
 
-use_these_keys = ['Titre', 'Durée', 'Nom entreprise', 'Bac','url']
+use_these_keys = ['Titre', 'Durée', 'Nom entreprise', 'BacFormat','url']
 
 print(es_client.ping())
 
@@ -33,7 +34,7 @@ def doc_generator(df):
         yield {
             "_index": 'job_offer',
             "_type": "offer",
-            "_id": None,
+            "_id": document['url'][:50],
             "_source": filterKeys(document),
         }
 

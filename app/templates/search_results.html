@@ -42,14 +42,14 @@
                                     </div>
                                     <div class="row gy-3">
                                     <div class="col">
-                                      <select class="form-select" aria-label="Default select example">
-                                      <option selected>Niveau d'étude</option>
-                                      <option value="0">Bac</option>
-                                      <option value="1">Bac + 1</option>
-                                      <option value="2">Bac + 2</option>
-                                      <option value="3">Bac + 3</option>
-                                      <option value="4">Bac + 4</option>
-                                      <option value="5">Bac + 5</option>
+                                    <select name="bac_select" class="form-select" aria-label="Default select example">
+                                      <option selected value="0">Niveau d'étude</option>
+                                      <option value="bac">Bac</option>
+                                      <option value="bac+1">Bac + 1</option>
+                                      <option value="bac+2">Bac + 2</option>
+                                      <option value="bac+3">Bac + 3</option>
+                                      <option value="bac+4">Bac + 4</option>
+                                      <option value="bac+5">Bac + 5</option>
                                     </select>
                                     </div>
 
@@ -106,7 +106,7 @@
         {% for hit in res %}
               <tr>
                 <th scope="row">{{ hit['_source']['Titre'] }}</th>
-                  <td>{{ hit['_source']['Bac'] }}</td>
+                  <td>{{ hit['_source']['BacFormat'] }}</td>
                   <td>{{ hit['_source']['Durée'] }}</td>
                   <td>{{ hit['_source']['url'] }}</td>
               </tr>

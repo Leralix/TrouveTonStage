@@ -5,7 +5,8 @@ import pandas as pd
 
 app = Flask(__name__)
 
-es_client = Elasticsearch(hosts=["http://elasticsearch:9200"])
+#es_client = Elasticsearch(hosts=["http://elasticsearch:9200"])
+es_client = Elasticsearch(hosts=["http://localhost:9200"])
 
 print("DEBUT")
 
@@ -20,19 +21,73 @@ def home():
 def search_request():
     search_term = request.form["NameInput"]
 
-    query = {
-        "query": {
-            "bool": {
-                "must": [
-                    {
-                        "match": {
-                            "Titre": search_term
+    bac_req = request.form['bac_select']
+    print(bac_req)
+
+
+    if search_term !="" and bac_req=='0':
+        query = {
+            "query": {
+                "bool": {
+                    "must": [
+                        {
+                            "match": {
+                                "Titre": search_term
+                            }
                         }
-                    }
-                ]
+                    ]
+                }
             }
         }
-    }
+    elif search_term !="" and bac_req!='0':
+        query = {
+            "query": {
+                "bool": {
+                    "must": [
+
+                        {
+                            "match": {
+                                "BacFormat": {
+                                    "query": bac_req,
+                                    "operator": "and"
+                                }
+                            }
+                        },
+                        {
+                            "match": {
+                                "Titre": search_term
+                            }
+                        }
+                    ]
+                }
+            }
+        }
+
+    elif search_term =="" and bac_req!='0':
+        query = {
+            "query": {
+                "bool": {
+                    "must": [
+
+                        {
+                            "match": {
+                                "BacFormat": {
+                                    "query": bac_req,
+                                    "operator": "and"
+                                }
+                            }
+                        },
+                    ]
+                }
+            }
+        }
+    elif search_term =="" and bac_req=='0':
+        query = {
+        "query": {
+            "match_all": {}
+            }
+        }
+
     rel = scan(client=es_client,
                query=query,
                scroll='1m',

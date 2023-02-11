@@ -38,7 +38,8 @@ class WTTJOfferScraper:
             type_emploi = np.nan
 
         try:
-            duree_emploi = type_emploi_et_duree[1].text
+            if 'mois' in type_emploi_et_duree[1].text:
+                duree_emploi = type_emploi_et_duree[1].text
         except NoSuchElementException:
             duree_emploi = np.nan
 
