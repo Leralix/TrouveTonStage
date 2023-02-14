@@ -37,7 +37,10 @@
                                 <!-- Email address input-->
                                 <div class="row gy-5">
                                     <div class="col">
-                                        <input class="form-control form-control-lg" id="searchtext" name = "NameInput" type="text" placeholder="Mot-clé (ex: data scientist)" data-sb-validations="required,email" />
+                                        <input class="form-control form-control-lg" class="searchtext" name = "ContratInput" type="text" placeholder="Quel type de contrat ? (stage,cdi,cdd...)" data-sb-validations="required,email" />
+                                        <br>
+                                        <input class="form-control form-control-lg" class="searchtext" name = "NameInput" type="text" placeholder="Mot-clé (ex: data scientist)" data-sb-validations="required,email" />
+
                                     </div>
                                     <div class="row gy-3">
                                     <div class="col">
@@ -53,12 +56,12 @@
                                     </div>
 
                                     <div class="col">
-                                      <select class="form-select" aria-label="Default select example">
-                                      <option selected>Durée du Stage</option>
-                                      <option value="m1-2">1 a 2 mois</option>
-                                      <option value="m3-4">3 a 4 mois</option>
-                                      <option value="m5-6">5 a 6 mois</option>
-                                      <option value="m6+">6 mois et +</option>
+                                      <select name="duration_select" class="form-select" aria-label="Default select example">
+                                      <option value="0" selected>Durée du Stage</option>
+                                      <option value="1,2">1 a 2 mois</option>
+                                      <option value="3,4">3 a 4 mois</option>
+                                      <option value="5,6">5 a 6 mois</option>
+                                      <option value="6,7">6 mois et +</option>
                                     </select>
                                         </div>
                                     </div>

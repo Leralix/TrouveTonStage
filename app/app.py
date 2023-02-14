@@ -5,8 +5,13 @@ import pandas as pd
 
 app = Flask(__name__)
 
-#es_client = Elasticsearch(hosts=["http://elasticsearch:9200"])
-es_client = Elasticsearch(hosts=["http://localhost:9200"])
+
+LOCAL = True
+
+if LOCAL==True:
+    es_client = Elasticsearch(hosts=["http://localhost:9200"])
+else:
+    es_client = Elasticsearch(hosts=["http://elasticsearch:9200"])
 
 print("DEBUT")
 
@@ -19,75 +24,42 @@ def home():
 
 @app.route('/search_results', methods=['GET','POST'])
 def search_request():
+
     search_term = request.form["NameInput"]
-
+    contrat_term = request.form["ContratInput"]
     bac_req = request.form['bac_select']
-    print(bac_req)
+    duration_req = request.form['duration_select']
+
+    counter_term=0
+
+    if search_term !="":
+        counter_term +=1
+    if contrat_term !="":
+        counter_term +=1
+    if bac_req!='0':
+        counter_term +=1
+    if duration_req !='0':
+        counter_term +=1
 
 
-    if search_term !="" and bac_req=='0':
-        query = {
-            "query": {
-                "bool": {
-                    "must": [
-                        {
-                            "match": {
-                                "Titre": search_term
-                            }
-                        }
-                    ]
-                }
-            }
-        }
-    elif search_term !="" and bac_req!='0':
-        query = {
-            "query": {
-                "bool": {
-                    "must": [
 
-                        {
-                            "match": {
-                                "BacFormat": {
-                                    "query": bac_req,
-                                    "operator": "and"
-                                }
-                            }
-                        },
-                        {
-                            "match": {
-                                "Titre": search_term
-                            }
-                        }
-                    ]
-                }
-            }
-        }
 
-    elif search_term =="" and bac_req!='0':
-        query = {
-            "query": {
-                "bool": {
-                    "must": [
-
-                        {
-                            "match": {
-                                "BacFormat": {
-                                    "query": bac_req,
-                                    "operator": "and"
-                                }
-                            }
-                        },
-                    ]
-                }
-            }
-        }
-    elif search_term =="" and bac_req=='0':
-        query = {
+    query = {
         "query": {
-            "match_all": {}
+            "bool": {
+                "should": [
+                    {"multi_match": {
+                        "query" : search_term,
+                        "fields":["Description","Titre"] }},
+                    {"match": {"ContratFormat": contrat_term}},
+                    {"match": {"Duree_format": duration_req.replace(',', ' ')}},
+                    {"term":{"BacFormat.keyword": bac_req}}
+
+                ],
+                "minimum_should_match": counter_term
             }
         }
-
+    }
     rel = scan(client=es_client,
                query=query,
                scroll='1m',
