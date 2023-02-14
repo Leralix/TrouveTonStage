@@ -1,11 +1,12 @@
+from csv_to_es import ElasticConnection
 from elasticsearch.helpers import scan
 from flask import Flask, render_template,request
 from elasticsearch import Elasticsearch
 import pandas as pd
 
-class app_es:
-    def __init__(self,elastic_client):
-        self.es_client = elastic_client
+
+esc = ElasticConnection(csv_filepath='data/clean_data.csv',local=False).create_connection()
+
 
 
 app = Flask(__name__)
@@ -56,7 +57,7 @@ def search_request():
                     }
                 }
             }
-        rel = scan(client=app_es.es_client,
+        rel = scan(client=esc,
                        query=query,
                        scroll='1m',
                        index='job_offer',
@@ -77,5 +78,3 @@ def search_request():
 if __name__ == '__main__':
     app.secret_key = 'mysecret'
     app.run(host='0.0.0.0')
-
-

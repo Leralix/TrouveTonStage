@@ -4,39 +4,56 @@ from elasticsearch import helpers
 import pandas as pd
 import time
 
-print("Connection a l'host")
-LOCAL = True
-if LOCAL==True:
-    es_client = Elasticsearch(hosts=["http://localhost:9200"])
-else:
-    es_client = Elasticsearch(hosts=["http://elasticsearch:9200"])
-time.sleep(0.1)
-print("début du ping")
-time.sleep(0.2)
-es_client.ping()
-print("fin du ping")
-
-df = pd.read_csv("data/clean_data.csv")
-df = df.fillna('')
-
-use_these_keys = ['Titre', 'Durée','Duree_format','Description', 'Nom entreprise', 'BacFormat','Deb_format','ContratFormat','url']
-
-print(es_client.ping())
-
-def filterKeys(document):
-    return {key: document[key] for key in use_these_keys}
+use_these_keys = ['Titre', 'Durée', 'Duree_format', 'Description', 'Nom entreprise', 'BacFormat', 'Deb_format',
+                  'ContratFormat', 'url']
 
 
-def doc_generator(df):
-    df_iter = df.iterrows()
-    for index, document in df_iter:
-        yield {
-            "_index": 'job_offer',
-            "_type": "offer",
-            #Id aussi fonctin de hashage ??
-            "_id": document['url'][:50],
-            "_source": filterKeys(document),
-        }
+class ElasticConnection:
+    def __init__(self,csv_filepath,local:bool=False,port:int=9200):
+        self.LOCAL=local
+        self.port = port
+        self.csv_filepath = csv_filepath
+        self.es_client=None
+        self.df=None
 
-print("Ajout fini")
-print(helpers.bulk(es_client, doc_generator(df)))
+    def create_connection(self):
+        print("Connection a l'host")
+
+
+        if self.LOCAL==True:
+            self.es_client = Elasticsearch(hosts=["http://localhost:"+str(self.port)])
+        else:
+            self.es_client = Elasticsearch(hosts=["http://elasticsearch:"+str(self.port)])
+
+
+        time.sleep(0.1)
+        print("début du ping")
+        time.sleep(0.2)
+        self.es_client.ping()
+        print("fin du ping")
+
+        self.df = pd.read_csv(self.csv_filepath)
+        self.df = self.df.fillna('')
+
+
+        print(self.es_client.ping())
+        self.add_data_()
+        return self.es_client
+
+    def filterKeys(self,document):
+        return {key: document[key] for key in use_these_keys}
+
+
+    def doc_generator(self,df):
+        df_iter = df.iterrows()
+        for index, document in df_iter:
+            yield {
+                "_index": 'job_offer',
+                "_type": "offer",
+                #Id aussi fonctin de hashage ??
+                "_id": document['url'][:50],
+                "_source": self.filterKeys(document),
+            }
+
+    def add_data_(self):
+        helpers.bulk(self.es_client, self.doc_generator(self.df))
