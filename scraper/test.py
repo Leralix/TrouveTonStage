@@ -1,13 +1,20 @@
-from selenium import webdriver
-
-url ="https://www.welcometothejungle.com/fr/companies/galadrim/jobs/stage-de-fin-d-etudes-coach-produit_paris?q=6c088d4cb4c44b5ed81c96f5eab25932&o=410316"
-
-
-from wttj import WTTJOfferScraper
-
-options = webdriver.ChromeOptions()
-options.add_experimental_option("detach", True)
-chrome = webdriver.Chrome(options=options, executable_path='./webdriver/chromedriver.exe')
+import pandas as pd
+import os
+from Data_Cleaner import DataCleaner
 
 
-WTTJOfferScraper.WTTJOfferScraper(chrome,url).scrap_page()
+df1 = pd.read_csv("./data/INDEED.csv")
+df2 = pd.read_csv("./data/WTTJ.csv")
+df3 = pd.concat([df1, df2], axis=0, ignore_index=True)
+
+if os.path.isfile('./data/Ind_Wttj.csv')==True :
+    df4 = pd.read_csv('./data/Ind_Wttj.csv')
+    df_final = pd.concat([df4,df3],axis=0,ignore_index=True)
+    df_final.to_csv('./data/Ind_Wttj.csv',index=False)
+else :
+    df3.to_csv('./data/Ind_Wttj.csv', index=False)
+
+
+# Clean csv and export the result
+dc = DataCleaner('./data/Ind_Wttj.csv')
+dc.clean('./clean_data/clean_data.csv')

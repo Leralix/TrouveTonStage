@@ -7,26 +7,25 @@ import os
 
 from Data_Cleaner import DataCleaner
 
-"""ISc = IndeedScraper(
+ISc = IndeedScraper(
     webdriver_path='./webdriver/chromedriver.exe',
-    nb_pages=2,
+    nb_pages=50,
     output_name="./data/INDEED.csv",
     min_delai=3,
-    update_every=1
-)"""
+    update_every=10
+)
 
 wts = WTTJScraper(
     webdriver_path='./webdriver/chromedriver.exe',
-    nb_pages=2,
+    nb_pages=33,
     output_name="./data/WTTJ.csv",
-    url_csv='./data/temp/temp_wttj_links.csv',
-    update_every=1,
+    update_every=10,
 )
 
 thread_list = []
-#thrd1 = Thread(target=ISc.launch_scraping)
+thrd1 = Thread(target=ISc.launch_scraping)
 thrd2 = Thread(target=wts.launch_scraping)
-#thread_list.append(thrd1)
+thread_list.append(thrd1)
 thread_list.append(thrd2)
 
 # Demarre le thread
