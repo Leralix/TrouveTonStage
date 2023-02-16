@@ -58,7 +58,6 @@ regex_date2 = r"\w+\s\d{4}"
 
 # It takes a csv file as input, cleans it, and outputs a csv file
 class DataCleaner:
-
     def __init__(self, filename):
         """
         The function takes a filename as an argument and tries to read the file as a csv. If it fails, it raises an error
