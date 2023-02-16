@@ -1,3 +1,5 @@
+# It scrapes job offers from Indeed
+
 # This Python file uses the following encoding: utf-8
 import random
 import time
@@ -11,8 +13,25 @@ from .IndeedOfferScraper import IndeedOfferScraper
 
 class IndeedScraper:
 
-    def __init__(self, webdriver_path: str, nb_pages: int, output_name: str = None, min_delai: int = 6,
-                 max_delai: int = 14, update_every: int = 0):
+    def __init__(self, webdriver_path: str, nb_pages: int, output_name: str = None, min_delai: int = 6,max_delai: int = 14, update_every: int = 0):
+        """
+        This function initializes the IndeedScraper class with the following parameters:
+
+        - webdriver_path: the path to your webdriver executable file.
+        - nb_pages:  the number of pages you want to scrape from Indeed
+        - output_name: the name of the output file (like "test.csv")
+        - min_delai: the minimum time to wait between two requests. Defaults to 6
+        - max_delai: the maximum time to wait between two requests. Defaults to 14
+        - update_every: the number of pages to scrape before updating a temporary csv file (in case of exception). Defaults to 0 (Never)
+
+        Args:
+          webdriver_path (str): the path to your webdriver executable file.
+          nb_pages (int): the number of pages you want to scrape from Indeed
+          output_name (str): the name of the output file (like "test.csv")
+          min_delai (int): the minimum time to wait between two requests. Defaults to 6
+          max_delai (int): the maximum time to wait between two requests. Defaults to 14
+          update_every (int): the number of pages to scrape before updating a temporary csv file (in case of exception). Defaults to 0 (Never)
+        """
         self.chrome = None
         self.indeed_df = pd.DataFrame()
 
@@ -25,11 +44,13 @@ class IndeedScraper:
         self.min_delai = min_delai
         self.max_delai = max_delai
 
-    # This is the main function
-    # Its role is to get a link on every job offer on a given page, then call the scraping function on each one.
-
     def launch_scraping(self):
+        """
+        Execute the scraping process. It first initialises the webdriver, then if a url_csv was mentionned, take this file and scrap the url, otherwise it gathers all the url by going from page to page until the number of pages is reached.
+        """
 
+        # Trying to initialise the webdriver, scrap the pages and save the data to a csv file. If it fails, it raises an
+        # error.
         try:
             self.chrome = self.initialisation_(self.webdriver_path)
             self.scrap(self.nb_pages)
@@ -41,8 +62,14 @@ class IndeedScraper:
 
     @staticmethod
     def initialisation_(webdriver_path):
-        # Configure the webdriver (Selenium), because Indeed in protected by Cloudflare, and simple scraper couldn't
-        # be used.
+        """
+        It initialises a webdriver with the given path, and returns the webdriver
+
+        Args:
+            webdriver_path: The path to the webdriver executable file you want to use.
+        Returns:
+            the webdriver initialised with the executable..
+        """
         options = webdriver.ChromeOptions()
         options.add_experimental_option("detach", True)
         chrome = webdriver.Chrome(options=options, executable_path=webdriver_path)
@@ -50,19 +77,28 @@ class IndeedScraper:
         return chrome
 
     def accept_cookies_(self):
+        """
+        It waits until the element with the id "onetrust-accept-btn-handler" is clickable, then clicks it
+        """
 
-        # Accept the cookies after arriving on the page
-        # Wait until the button 'accept' is clickable.
         wait = WebDriverWait(self.chrome, 15)
         wait.until(ec.element_to_be_clickable((By.XPATH, '//*[@id="onetrust-accept-btn-handler"]')))
         self.chrome.find_element('xpath', '//*[@id="onetrust-accept-btn-handler"]').click()
 
-    # Function to scrap one job offer page (page containing multiple job offer) Parameters chrome (Webdriver used to
-    # perform the request), lien_page (link of the job offer page), df (dataframe where we want to add all the
-    # informations retrieved on the page)
-    def offers_link_(self, lien_page: str):
 
-        # The webdrive get to link passed in parameters
+    def offers_link_(self, lien_page: str):
+        """
+        It takes a link as a parameter, goes to that link, finds all the links to each job offers, retrieves all the href
+        (link) and add those to a list
+
+        Args:
+          lien_page (str): the link to the page where the job offers are
+
+        Returns:
+          A list of all the links to each job offers
+        """
+
+        # The webdriver get to link passed in parameters
         self.chrome.get(lien_page)
 
         # Find all the links to each job offers
@@ -76,10 +112,18 @@ class IndeedScraper:
         return href
 
     def scrap_offers_(self, url_list, df):
+        """
+        It scrapes the job offers from the list of urls given in parameters
 
-        # For each link found on the page
-        # Get all the information from each links.
+        Args:
+          url_list: a list of urls to scrap
+          df: the dataframe that will contain all the informations of the offers.
 
+        Returns:
+          A dataframe containing all the informations off all jober offers contained on the link given in parameters.
+        """
+
+        # Go through all the job offer's url and scrap every one of them.
         for elem in url_list:
 
             # Get the webdrive on the page of the offers
@@ -106,15 +150,25 @@ class IndeedScraper:
         return df
 
     def scrap(self, nb_pages: int):
+        """
+        We get the main page of Indeed, we accept the cookies, and get the url of the page we want to scrap, we get the
+        link of all the job offers contained in this page, and we scrap these job offers. Then do the same for the next pages
+
+        Args:
+          nb_pages (int): the number of pages you want to scrap.
+        """
+
         # Get the Indeed's main page, with one keyword: stage.
         self.chrome.get("https://fr.indeed.com/jobs?q=stage")
 
+        # Accept the cookies on the first entrance on the website
         self.accept_cookies_()
 
         for i in range(0, nb_pages * 10, 10):
-            # get the url correspondign to the page
+            # get the url corresponding to the page
             url = "https://fr.indeed.com/jobs?q=stage&start=" + str(i)
 
+            # Get every job offer links on the webpage.
             offers_link = self.offers_link_(url)
 
             # Scrap this page
@@ -122,4 +176,11 @@ class IndeedScraper:
             self.indeed_df = self.scrap_offers_(offers_link, self.indeed_df)
 
     def to_csv(self, output_name):
+        """
+        This function takes in a dataframe and an output name, and then exports the dataframe to a csv file with the given
+        output name.
+
+        Args:
+          output_name: the name of the csv file you want to save the data to
+        """
         self.indeed_df.to_csv(output_name, index=False)
