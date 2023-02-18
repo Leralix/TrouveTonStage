@@ -1,0 +1,50 @@
+---
+title: "vizu-trouvetonstage"
+output: html_document
+date: "2023-02-15"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(ggplot2)
+library(dplyr)
+library(gapminder)
+library(geojsonio)
+library(broom)
+library(treemapify)
+library(tidyverse)
+```
+
+
+```{r}
+df <- read.csv("clean_data.csv")
+head(df)
+```
+
+```{r}
+df[df==""] <- "Non spécifié"
+```
+
+```{r}
+df %>%count(BacFormat,sort=TRUE)%>%filter(n>19)%>%ggplot(aes(x=n,y=BacFormat))+geom_bar(stat='identity')
+```
+
+```{r}
+df2 = df
+
+for (index in c(1:12)){
+  df2[paste(c("mois_",as.character(index)), collapse="")] <- 0
+  
+}
+
+for (index in c(1:length(df2$Titre))){
+  df2[index,paste(c("mois_",as.character(df2[index,'Duree_format'])), collapse="")] <- 1
+  
+  
+  
+}
+  
+  
+
+head(df2)
+```
