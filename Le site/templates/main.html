@@ -34,12 +34,14 @@
                             <!-- Page heading-->
                             <h1 class="mb-4">Un site spécialisé dans la recherche de stage</h1>
                             <form action="/search_results" class="form-subscribe" id="contactForm" data-sb-form-api-token="API_TOKEN" method = "post">
-                                <!-- Email address input-->
+                                <!-- Partie qui permet de renseigner les critères de sélection-->
                                 <div class="row gy-5">
+                                    <!-- Input pour rentrer les mots clé du stage-->
                                     <div class="col">
                                         <input class="form-control form-control-lg" id="searchtext" name = "NameInput" type="text" placeholder="Mot-clé (ex: data scientist)" data-sb-validations="required,email" />
                                     </div>
                                     <div class="row gy-3">
+                                    <!-- Partie qui permet de selectionner le niveau d'étude-->
                                     <div class="col">
                                       <select class="form-select" aria-label="Default select example" name = "BacInput">
                                       <option selected value=" ">Niveau d'étude</option>
@@ -51,7 +53,7 @@
                                       <option value="Bac +5">Bac +5</option>
                                     </select>
                                     </div>
-
+                                    <!-- Partie qui permet de sélectionner la durée d'un stage-->
                                     <div class="col">
                                       <select class="form-select" aria-label="Default select example" name = "DureeInput">
                                       <option selected>Durée du Stage</option>
@@ -62,9 +64,7 @@
                                     </select>
                                         </div>
                                     </div>
-
-
-
+                                        <!-- Bouton rechercher-->
                                         <div class="col"><button class="btn btn-primary btn-lg" type="submit">Lancer la recherche</button></div>
                                 </div>
                                 <!-- Submit success message-->
