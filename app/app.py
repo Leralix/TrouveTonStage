@@ -11,23 +11,24 @@ class app_es:
 app = Flask(__name__)
 print("DEBUT")
 
-
+#Page principale, celle qui est affichée quand on ouvre le site
 @app.route('/')
 def home():
     return render_template('main.html')
 
 
-
+#Page "Search results", qui se lance quand on clique sur le bouton rechercher un stage
 @app.route('/search_results', methods=['GET','POST'])
 def search_request():
 
+        #Récupération de toutes les requêtes (Nom du stage, type de contrat, etc)
         search_term = request.form["NameInput"]
         contrat_term = request.form["ContratInput"]
         bac_req = request.form['bac_select']
         duration_req = request.form['duration_select']
 
+        #On compte le nombre de termes remplis (l'utilisateur peut choisir de ne pas renseigné une durée de stage par exemple)
         counter_term=0
-
         if search_term !="":
             counter_term +=1
         if contrat_term !="":
@@ -39,7 +40,7 @@ def search_request():
 
 
 
-
+        #On effectue la query sur elastic search. On demande a la Query d'avoir autant de termes qui "match" que de nombre de termes remplis, calculé précédement
         query = {
                 "query": {
                     "bool": {
@@ -64,13 +65,8 @@ def search_request():
                        preserve_order=False,
                        clear_scroll=True
                        )
+        #On met dans une liste les résultat, puis on les retourne a la page web. Le reste se fera dans le code HTML de "search_results.html"
         result = list(rel)
-        temp = []
-
-        for hit in result:
-            temp.append(hit['_source'])
-            # Create a dataframe.
-        data = pd.DataFrame(temp)
 
         return render_template('search_results.html', res=result)
 
