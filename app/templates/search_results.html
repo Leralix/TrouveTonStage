@@ -100,18 +100,24 @@
             <thead>
               <tr>
                 <th>Titre</th>
+                <th>Type de contrat</th>
+                <th>Entrprise</th>
                 <th>Bac</th>
                 <th>Durée</th>
-                <th>url</th>
+                <th>Lien</th>
               </tr>
             </thead>
             <tbody>
         {% for hit in res %}
               <tr>
-                <th scope="row">{{ hit['_source']['Titre'] }}</th>
-                  <td>{{ hit['_source']['BacFormat'] }}</td>
-                  <td>{{ hit['_source']['Durée'] }}</td>
-                  <td>{{ hit['_source']['url'] }}</td>
+
+                    <th scope="row">{{ hit['_source']['Titre'] }}</th>
+                    <td>{{ hit['_source']['ContratFormat'] }}</td>
+                    <td>{{ hit['_source']['Nom entreprise'] }}</td>
+                    <td>{{ hit['_source']['BacFormat'] }}</td>
+                    <td>{{ hit['_source']['Durée'] }}</td>
+                    <td><a href = {{hit['_source']['url']}}>lien</a> </td>
+
               </tr>
         {% endfor %}
             </tbody>
